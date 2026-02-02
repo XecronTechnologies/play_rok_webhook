@@ -1,0 +1,37 @@
+<div class="sidebar">
+    <div class="sidebar-header-row">
+        <div class="header-label">Messages</div>
+
+        <svg (click)="onDeleteClick()" class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+
+        <div class="header-count">({{ hitList.length }})</div>
+    </div>
+    <!-- <h1>{{advice}}</h1> -->
+
+    <div class="sidebar-content">
+        @for (item of hitList; track item) {
+        <div class="sidebar-item">
+            <div class="item-header-row">
+                <div class="post-badge">POST</div>
+                <div class="item-title">{{ item.text }}</div>
+            </div>
+
+            <div class="details-group">
+                <div class="detail-text">Email</div>
+                <div class="detail-separator">•</div>
+                <div class="detail-text">Phone</div>
+                <div class="detail-separator">•</div>
+                <div class="detail-text">Address</div>
+            </div>
+
+            <div class="detail-text" style="color: #999; font-size: 11px; margin-top: 6px;">
+                {{ item.time }}
+            </div>
+        </div>
+        }
+    </div>
+</div>
