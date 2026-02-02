@@ -1,4 +1,5 @@
 import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { WebhookService } from '../webhook.service';
 
 @Component({
   selector: 'sidebar',
@@ -8,43 +9,18 @@ import { Component, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
   styleUrl: './sidebar.css',
 })
 export class Sidebar implements OnInit, OnDestroy {
-  hitList: { text: string; time: string; unix: number; id: string }[] = [];
-  advice: string = 'Loading advice...';
   private intervalId: any;
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(
+    private cdr: ChangeDetectorRef,
+    public webhookService: WebhookService
+  ) { }
 
   ngOnInit() {
-    this.loadFromDB();
     // Fetch new "webhook" simulation every 3 seconds
     this.intervalId = setInterval(() => {
       this.getAdvice();
     }, 3000);
-  }
-
-  private loadFromDB() {
-    const dbRequest = indexedDB.open('AdviceDB', 1);
-
-    dbRequest.onupgradeneeded = () => {
-      if (!dbRequest.result.objectStoreNames.contains('adviceHistory')) {
-        dbRequest.result.createObjectStore('adviceHistory', { keyPath: 'unix' });
-      }
-    };
-
-    dbRequest.onsuccess = () => {
-      const db = dbRequest.result;
-      const transaction = db.transaction('adviceHistory', 'readonly');
-      const store = transaction.objectStore('adviceHistory');
-      const getAllRequest = store.getAll();
-
-      getAllRequest.onsuccess = () => {
-        // Sort by unix descending (newest first)
-        const savedData = getAllRequest.result.sort((a: any, b: any) => b.unix - a.unix);
-        this.hitList = savedData;
-        this.cleanExpiredMessages();
-        this.cdr.detectChanges();
-      };
-    };
   }
 
   ngOnDestroy() {
@@ -52,24 +28,9 @@ export class Sidebar implements OnInit, OnDestroy {
       clearInterval(this.intervalId);
     }
   }
+
   onItemClick(id: string) {
-    // alert("item clicked " + id)
-    window.history.pushState({}, '', `/in/${id}`);
-
-  }
-
-  // --- FEATURE: 24 HOUR AUTO DELETE ---
-  private cleanExpiredMessages() {
-    const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
-    const initialLength = this.hitList.length;
-
-    // Remove items older than 24 hours
-    this.hitList = this.hitList.filter(item => item.unix > twentyFourHoursAgo);
-
-    // Only detect changes if something was actually deleted
-    if (this.hitList.length !== initialLength) {
-      this.cdr.detectChanges();
-    }
+    this.webhookService.selectItem(id);
   }
 
   generateUniqueId(): string {
@@ -98,28 +59,44 @@ export class Sidebar implements OnInit, OnDestroy {
         hour12: true
       }).replace(',', ' at');
 
-      this.advice = newAdviceText;
       const unixTimestamp = now.getTime();
 
-      // Update Local List
-      this.hitList.unshift({ text: newAdviceText, time: formattedTime, unix: unixTimestamp, id: uniqueAlphaId });
+      // Mock data for technical fields - Advice API always uses GET
+      const method = 'GET';
 
-      // Clean up old messages (Logic for 24h deletion)
-      this.cleanExpiredMessages();
+      const mockHeaders = {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Webhook-Simulator/1.0)',
+        'X-Request-Id': uniqueAlphaId,
+        'Host': 'api.adviceslip.com'
+      };
 
-      // IndexDB logic for persistence
-      const dbRequest = indexedDB.open('AdviceDB', 1);
-      dbRequest.onupgradeneeded = () => {
-        if (!dbRequest.result.objectStoreNames.contains('adviceHistory')) {
-          dbRequest.result.createObjectStore('adviceHistory', { keyPath: 'unix' });
+      const mockResponseHeaders = {
+        'Status': '200 OK',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, private',
+        'Server': 'nginx',
+        'Access-Control-Allow-Origin': '*'
+      };
+
+      const mockPayload = {
+        slip: {
+          id: Math.floor(Math.random() * 200),
+          advice: newAdviceText
         }
       };
-      dbRequest.onsuccess = () => {
-        const db = dbRequest.result;
-        const transaction = db.transaction('adviceHistory', 'readwrite');
-        const store = transaction.objectStore('adviceHistory');
-        store.add({ text: newAdviceText, time: formattedTime, unix: unixTimestamp, id: uniqueAlphaId });
-      };
+
+      // Add to service
+      this.webhookService.addToHitList({
+        text: newAdviceText,
+        time: formattedTime,
+        unix: unixTimestamp,
+        id: uniqueAlphaId,
+        method: method,
+        headers: mockHeaders,
+        responseHeaders: mockResponseHeaders,
+        payload: mockPayload
+      });
 
       this.cdr.detectChanges();
     } catch (error) {
@@ -128,14 +105,7 @@ export class Sidebar implements OnInit, OnDestroy {
   }
 
   onDeleteClick() {
-    this.hitList = [];
-    // Also clear IndexedDB if you want a full reset
-    const dbRequest = indexedDB.open('AdviceDB', 1);
-    dbRequest.onsuccess = () => {
-      const db = dbRequest.result;
-      const transaction = db.transaction('adviceHistory', 'readwrite');
-      transaction.objectStore('adviceHistory').clear();
-    };
+    this.webhookService.clearAll();
     this.cdr.detectChanges();
   }
 }

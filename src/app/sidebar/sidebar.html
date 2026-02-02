@@ -10,26 +10,25 @@
             <line x1="14" y1="11" x2="14" y2="17"></line>
         </svg>
 
-        <div class="header-count">({{ hitList.length }}/1000)</div>
+        <div class="header-count">({{ webhookService.hitList().length }}/1000)</div>
         <div class="retention-tag">24h</div>
     </div>
 
     <div class="sidebar-content">
-        @for (item of hitList; track item.unix) {
+        @for (item of webhookService.hitList(); track item.unix) {
         <div class="sidebar-item" (click)="onItemClick(item.id)">
             <div class="item-header-row">
-                <div class="post-badge">POST</div>
-                <div class="item-title">{{ item.text }}</div>
+                <div class="post-badge" [attr.data-method]="item.method">{{ item.method || 'GET' }}</div>
                 <div class="request-id">#{{ item.id }}</div>
             </div>
 
-            <div class="details-group">
-                <div class="detail-text">Email</div>
+            <!-- <div class="details-group"> -->
+            <!-- <div class="detail-text">Email</div>
                 <div class="detail-separator">•</div>
                 <div class="detail-text">Phone</div>
                 <div class="detail-separator">•</div>
-                <div class="detail-text">Address</div>
-            </div>
+                <div class="detail-text">Address</div> -->
+            <!-- </div> -->
 
 
             <div class="item-footer">

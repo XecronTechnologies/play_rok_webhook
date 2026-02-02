@@ -1,0 +1,87 @@
+<div class="response-container">
+    @if (webhookService.selectedItem(); as item) {
+    <div class="message-display wide-layout">
+        <div class="message-header">
+            <div class="header-main">
+                <span class="method-badge" [attr.data-method]="item.method">{{ item.method || 'GET' }}</span>
+                <span class="url-text">{{ currentPath() }}</span>
+                <span class="id-badge">#{{ item.id }}</span>
+            </div>
+            <span class="time-badge">{{ item.time }}</span>
+        </div>
+
+        <div class="content-tabs">
+            <!-- Section 1: Overview -->
+            <div class="section">
+                <h3 class="section-title">Message Body</h3>
+                <div class="message-text-box">
+                    {{ item.text }}
+                </div>
+            </div>
+
+            <!-- Side-by-Side Headers Grid -->
+            <div class="headers-grid">
+                <!-- Section 2: Request Details -->
+                <div class="section">
+                    <h3 class="section-title">Request Headers</h3>
+                    <div class="table-wrapper">
+                        <table class="details-table">
+                            <thead>
+                                <tr>
+                                    <th>Header</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (key of webhookService.objectKeys(item.headers || {}); track key) {
+                                <tr>
+                                    <td class="key">{{ key }}</td>
+                                    <td class="value">{{ item.headers[key] }}</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: Response Details -->
+                <div class="section">
+                    <h3 class="section-title">Response Headers</h3>
+                    <div class="table-wrapper">
+                        <table class="details-table">
+                            <thead>
+                                <tr>
+                                    <th>Header</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (key of webhookService.objectKeys(item.responseHeaders || {}); track key) {
+                                <tr>
+                                    <td class="key">{{ key }}</td>
+                                    <td class="value">{{ item.responseHeaders[key] }}</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: JSON Payload -->
+            <div class="section">
+                <h3 class="section-title">Raw Payload</h3>
+                <div class="code-block">
+                    <pre><code>{{ webhookService.jsonStringify(item.payload, null, 2) }}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    } @else {
+    <div class="empty-selection">
+        <div class="empty-icon">📥</div>
+        <h3>Select a message</h3>
+        <p>Click on an item in the sidebar to view its technical details</p>
+    </div>
+    }
+</div>
