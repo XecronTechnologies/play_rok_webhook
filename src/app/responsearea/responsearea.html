@@ -68,11 +68,11 @@
                 </div>
             </div>
 
-            <!-- Section 4: JSON Payload -->
+            <!-- Section 4: Response Body -->
             <div class="section">
-                <h3 class="section-title">Raw Payload</h3>
-                <div class="code-block">
-                    <pre><code>{{ webhookService.jsonStringify(item.payload, null, 2) }}</code></pre>
+                <h3 class="section-title">Response Body</h3>
+                <div class="json-viewer-wrapper">
+                    <app-json-viewer [data]="item.payload"></app-json-viewer>
                 </div>
             </div>
         </div>

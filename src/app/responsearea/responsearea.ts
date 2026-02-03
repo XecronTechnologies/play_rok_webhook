@@ -1,10 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { WebhookService } from '../webhook.service';
 
+import { JsonViewerComponent } from './json-viewer.component';
+
 @Component({
   selector: 'responsearea',
   standalone: true,
-  imports: [],
+  imports: [JsonViewerComponent],
   templateUrl: './responsearea.html',
   styleUrl: './responsearea.css',
 })
