@@ -2,3 +2,8 @@
   <sidebar></sidebar>
   <responsearea></responsearea>
 </div>
+
+<!-- Limit Overlay - shows when hit limit is reached -->
+@if (webhookService.showLimitOverlay()) {
+<app-limit-overlay (completed)="onQuizCompleted()"></app-limit-overlay>
+}

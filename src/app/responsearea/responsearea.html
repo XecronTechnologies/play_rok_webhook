@@ -7,21 +7,22 @@
                 <span class="url-text">{{ currentPath() }}</span>
                 <span class="id-badge">#{{ item.id }}</span>
             </div>
-            <span class="time-badge">{{ item.time }}</span>
+            <div class="header-nav">
+                <a href="https://www.xecrontechnologies.in/tools" target="_blank" rel="noopener noreferrer"
+                    class="nav-link">Tools</a>
+                <a href="https://www.xecrontechnologies.in/blog" target="_blank" rel="noopener noreferrer"
+                    class="nav-link">Blog</a>
+                <a href="https://www.xecrontechnologies.in/rok" target="_blank" rel="noopener noreferrer"
+                    class="nav-link">Rok</a>
+                <a href="https://www.xecrontechnologies.in/cli" target="_blank" rel="noopener noreferrer"
+                    class="nav-link">CLI</a>
+            </div>
         </div>
 
         <div class="content-tabs">
-            <!-- Section 1: Overview -->
-            <div class="section">
-                <h3 class="section-title">Message Body</h3>
-                <div class="message-text-box">
-                    {{ item.text }}
-                </div>
-            </div>
-
             <!-- Side-by-Side Headers Grid -->
             <div class="headers-grid">
-                <!-- Section 2: Request Details -->
+                <!-- Section 1: Request Headers -->
                 <div class="section">
                     <h3 class="section-title">Request Headers</h3>
                     <div class="table-wrapper">
@@ -33,6 +34,10 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td class="key">Time</td>
+                                    <td class="value">{{ item.time }}</td>
+                                </tr>
                                 @for (key of webhookService.objectKeys(item.headers || {}); track key) {
                                 <tr>
                                     <td class="key">{{ key }}</td>
@@ -44,22 +49,47 @@
                     </div>
                 </div>
 
-                <!-- Section 3: Response Details -->
+                <!-- Section 2: Query Parameters -->
                 <div class="section">
-                    <h3 class="section-title">Response Headers</h3>
+                    <h3 class="section-title">Query Parameters</h3>
                     <div class="table-wrapper">
                         <table class="details-table">
                             <thead>
                                 <tr>
-                                    <th>Header</th>
+                                    <th>Parameter</th>
                                     <th>Value</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (key of webhookService.objectKeys(item.responseHeaders || {}); track key) {
+                                @for (key of webhookService.objectKeys(item.query || {}); track key) {
                                 <tr>
                                     <td class="key">{{ key }}</td>
-                                    <td class="value">{{ item.responseHeaders[key] }}</td>
+                                    <td class="value">{{ item.query[key] }}</td>
+                                </tr>
+                                } @empty {
+                                <tr class="placeholder-row">
+                                    <td class="key">Parameter</td>
+                                    <td class="value"> (No Query Parameters)</td>
+                                </tr>
+                                <tr class="placeholder-row">
+                                    <td class="key">&nbsp;</td>
+                                    <td class="value">&nbsp;</td>
+                                </tr>
+                                <tr class="placeholder-row">
+                                    <td class="key">&nbsp;</td>
+                                    <td class="value">&nbsp;</td>
+                                </tr>
+                                <tr class="placeholder-row">
+                                    <td class="key">&nbsp;</td>
+                                    <td class="value">&nbsp;</td>
+                                </tr>
+                                <tr class="placeholder-row">
+                                    <td class="key">&nbsp;</td>
+                                    <td class="value">&nbsp;</td>
+                                </tr>
+                                <tr class="placeholder-row">
+                                    <td class="key">&nbsp;</td>
+                                    <td class="value">&nbsp;</td>
                                 </tr>
                                 }
                             </tbody>
@@ -68,11 +98,23 @@
                 </div>
             </div>
 
-            <!-- Section 4: Response Body -->
-            <div class="section">
-                <h3 class="section-title">Response Body</h3>
+            <!-- Section 3: Request Body (POST/PUT/PATCH body) -->
+            <div class="section flex-grow-section">
+                <h3 class="section-title">
+                    Request Body
+                    @if (item.method === 'POST' || item.method === 'PUT' || item.method === 'PATCH') {
+                    <span class="body-type-badge">{{ item.method }} Body</span>
+                    }
+                </h3>
                 <div class="json-viewer-wrapper">
+                    @if (hasBody(item.payload)) {
                     <app-json-viewer [data]="item.payload"></app-json-viewer>
+                    } @else {
+                    <div class="empty-body">
+                        <span class="empty-body-icon">📭</span>
+                        <span class="empty-body-text">No request body</span>
+                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -84,4 +126,16 @@
         <p>Click on an item in the sidebar to view its technical details</p>
     </div>
     }
+
+    <div class="response-footer">
+        <span class="free-text">Unlock a 100-hit quota extension for today's session by attending our technical
+            quizzes.</span>
+        <span class="separator">|</span>
+        <a href="https://www.xecrontechnologies.in/" target="_blank" rel="noopener noreferrer" class="footer-branding">
+            <span>Powered by</span>
+            <img src="https://www.xecrontechnologies.in/_next/image?url=%2Flogo.png&w=32&q=75" alt="Xecron Logo"
+                class="footer-logo">
+            <span>Xecron Technologies</span>
+        </a>
+    </div>
 </div>

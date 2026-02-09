@@ -1,0 +1,14 @@
+{
+    "name": "webhook_handler",
+    "version": "1.0.0",
+    "description": "Zoho Catalyst webhook handler that stores requests in Firebase RTDB",
+    "main": "index.js",
+    "dependencies": {
+        "firebase-admin": "^11.11.0",
+        "zcatalyst-sdk-node": "^0.0.5"
+    },
+    "catalyst": {
+        "type": "advancedio",
+        "timeout": 30000
+    }
+}

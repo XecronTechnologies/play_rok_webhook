@@ -1,0 +1,14 @@
+/* Cloudflare Pages Redirect Rules */
+/* These rules ensure SPA routing works correctly */
+
+/* 
+ * For Cloudflare Pages, add these redirect rules in the dashboard:
+ * 
+ * Rule 1: SPA Fallback
+ * - From: /view/*
+ * - To: /index.html
+ * - Status: 200
+ * 
+ * This ensures that when users access /view/:uniqueId directly,
+ * the Angular app is served and can handle the routing.
+ */
